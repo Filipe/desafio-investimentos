@@ -1,6 +1,59 @@
 @Investimentos.Api_HostAddress = http://localhost:5222
+@Investimentos.Api_Docker = http://localhost:8080
 
-GET {{Investimentos.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Health Check
+GET {{Investimentos.Api_HostAddress}}/api/health
 
-###
+### Health Check (Docker)
+GET {{Investimentos.Api_Docker}}/api/health
+
+### Login - Obter Token JWT
+POST {{Investimentos.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "clienteId": 1
+}
+
+### Simular Investimento (com token - substitua {token} pelo token obtido no login)
+POST {{Investimentos.Api_HostAddress}}/api/simular-investimento
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "clienteId": 1,
+  "valor": 10000,
+  "prazoMeses": 12,
+  "tipoProduto": "CDB"
+}
+
+### Simular Investimento (com bypass de desenvolvimento)
+POST {{Investimentos.Api_HostAddress}}/api/simular-investimento
+Content-Type: application/json
+X-Debug-Bypass: 1
+
+{
+  "clienteId": 1,
+  "valor": 5000,
+  "prazoMeses": 6,
+  "tipoProduto": "Fundo"
+}
+
+### Obter Todas as Simulações
+GET {{Investimentos.Api_HostAddress}}/api/simulacoes
+X-Debug-Bypass: 1
+
+### Obter Simulações por Produto e Dia
+GET {{Investimentos.Api_HostAddress}}/api/simulacoes/por-produto-dia
+
+### Obter Perfil de Risco do Cliente
+GET {{Investimentos.Api_HostAddress}}/api/perfil-risco/1
+
+### Obter Produtos Recomendados para Perfil Conservador
+GET {{Investimentos.Api_HostAddress}}/api/produtos/recomendacoes/1
+
+### Obter Telemetria
+GET {{Investimentos.Api_HostAddress}}/api/telemetria
+
+### Obter Telemetria com Filtro de Datas
+GET {{Investimentos.Api_HostAddress}}/api/telemetria?dataInicio=2025-11-01&dataFim=2025-11-30

@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<PerfilRisco> PerfisRisco { get; set; }
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<Simulacao> Simulacoes { get; set; }
+    public DbSet<TelemetriaRegistro> TelemetriaRegistros { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -70,6 +71,16 @@ public class AppDbContext : DbContext
                 .WithMany(p => p.Simulacoes)
                 .HasForeignKey(e => e.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configuração da entidade TelemetriaRegistro
+        modelBuilder.Entity<TelemetriaRegistro>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NomeServico).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Endpoint).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.MetodoHttp).IsRequired().HasMaxLength(10);
+            entity.HasIndex(e => new { e.NomeServico, e.DataChamada });
         });
     }
 }

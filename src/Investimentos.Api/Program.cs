@@ -3,6 +3,13 @@ using FluentValidation.AspNetCore;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
 using Investimentos.Api.Data;
+using Investimentos.Api.Services;
+using Investimentos.Api.Middlewares;
+using Investimentos.Api.Configuration;
+using Investimentos.Api.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 // Configurar Serilog
 Log.Logger = new LoggerConfiguration()
@@ -22,8 +29,42 @@ try
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+    // JWT Configuration
+    var jwtConfig = new JwtConfig();
+    builder.Configuration.GetSection("Jwt").Bind(jwtConfig);
+    builder.Services.AddSingleton(jwtConfig);
+
+    // Services
+    builder.Services.AddScoped<ISimulacaoService, SimulacaoService>();
+    builder.Services.AddScoped<IRecomendacaoService, RecomendacaoService>();
+    builder.Services.AddScoped<IPerfilRiscoService, PerfilRiscoService>();
+    builder.Services.AddScoped<ITelemetriaService, TelemetriaService>();
+    builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
     // Add services to the container.
     builder.Services.AddControllers();
+
+    // JWT Authentication
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig.Issuer,
+            ValidAudience = jwtConfig.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret))
+        };
+    });
+
+    builder.Services.AddAuthorization();
 
     // FluentValidation
     builder.Services.AddFluentValidationAutoValidation();
@@ -41,7 +82,32 @@ try
         {
             Title = "Investimentos API",
             Version = "v1",
-            Description = "API para gerenciamento de investimentos"
+            Description = "API para gerenciamento de investimentos com autenticação JWT"
+        });
+
+        // Configurar JWT no Swagger
+        c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Bearer {token}\"",
+            Name = "Authorization",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
         });
     });
 
@@ -55,17 +121,33 @@ try
     }
 
     // Configure the HTTP request pipeline.
+    // Developer Exception Page deve vir primeiro
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Investimentos API v1");
-        });
+        app.UseDeveloperExceptionPage();
     }
 
-    app.UseHttpsRedirection();
+    // Swagger habilitado em Development e Production (para facilitar testes via Docker)
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Investimentos API v1");
+        c.RoutePrefix = "swagger"; // Explicitamente definir o prefixo
+    });
 
+    // Comentado para Docker - sem HTTPS no container
+    // app.UseHttpsRedirection();
+
+    // Development Bypass Middleware (antes da autenticação)
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseMiddleware<DevelopmentBypassMiddleware>();
+    }
+
+    // Middleware de Telemetria
+    app.UseMiddleware<TelemetryMiddleware>();
+
+    app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
 

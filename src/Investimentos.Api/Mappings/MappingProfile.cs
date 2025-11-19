@@ -31,7 +31,7 @@ public class MappingProfile : Profile
         // Mapeamento de Cliente e Perfil de Risco
         CreateMap<Cliente, PerfilRiscoDto>()
             .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Perfil, opt => opt.MapFrom(src => src.PerfilRisco != null ? src.PerfilRisco.Nome : "Não definido"))
+            .ForMember(dest => dest.Nome, opt => opt.MapFrom(src => src.PerfilRisco != null ? src.PerfilRisco.Nome : "Não definido"))
             .ForMember(dest => dest.Descricao, opt => opt.MapFrom(src => src.PerfilRisco != null ? src.PerfilRisco.Descricao : ""))
             .ForMember(dest => dest.Pontuacao, opt => opt.Ignore());
     }

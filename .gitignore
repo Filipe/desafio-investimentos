@@ -331,3 +331,14 @@ FodyWeavers.xsd
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# SQLite databases (development)
+*.db
+*.db-shm
+*.db-wal
+
+# Docker data (optional - descomente se quiser ignorar)
+# data/
+
+# ASP.NET Core Data Protection Keys
+**/DataProtection-Keys/

@@ -1,0 +1,79 @@
+# Testes da API de Investimentos
+
+## Health Check
+GET http://localhost:5222/api/health
+
+###
+
+## Obter todas as simulações
+GET http://localhost:5222/api/simulacoes
+
+###
+
+## Simular investimento - CDB
+POST http://localhost:5222/api/simular-investimento
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "valor": 10000.00,
+  "prazoMeses": 12,
+  "tipoProduto": "CDB"
+}
+
+###
+
+## Simular investimento - Fundo
+POST http://localhost:5222/api/simular-investimento
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "valor": 5000.00,
+  "prazoMeses": 6,
+  "tipoProduto": "Fundo"
+}
+
+###
+
+## Simular investimento - Qualquer tipo
+POST http://localhost:5222/api/simular-investimento
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "valor": 2000.00,
+  "prazoMeses": 24,
+  "tipoProduto": ""
+}
+
+###
+
+## Simular investimento - Valor baixo (deve falhar por validação)
+POST http://localhost:5222/api/simular-investimento
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "valor": 0,
+  "prazoMeses": 12,
+  "tipoProduto": "CDB"
+}
+
+###
+
+## Simular investimento - Prazo zero (deve falhar por validação)
+POST http://localhost:5222/api/simular-investimento
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "valor": 1000.00,
+  "prazoMeses": 0,
+  "tipoProduto": "CDB"
+}
+
+###
+
+## Obter simulações agrupadas por produto e dia
+GET http://localhost:5222/api/simulacoes/por-produto-dia
