@@ -8,17 +8,28 @@ echo "Teste de Perfil de Risco e Recomendações"
 echo "==================================="
 echo ""
 
-# Teste 1: Obter perfil de risco do cliente
-echo "1. GET /api/perfil-risco/1 - Obter perfil do cliente João"
+# Obter token primeiro
+echo "0. Obtendo token JWT..."
 echo "-----------------------------------"
-curl -s "${API_URL}/perfil-risco/1" | jq
+TOKEN_RESPONSE=$(curl -s -X POST "${API_URL}/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"clienteId": 1}')
+TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.token')
+echo "Token obtido!"
+echo ""
+echo ""
+
+# Teste 1: Obter perfil de risco do cliente
+echo "1. GET /api/perfil-risco/1 - Obter perfil do cliente João (com token)"
+echo "-----------------------------------"
+curl -s -H "Authorization: Bearer $TOKEN" "${API_URL}/perfil-risco/1" | jq
 echo ""
 echo ""
 
 # Teste 2: Tentar obter perfil de cliente inexistente
-echo "2. GET /api/perfil-risco/999 - Cliente inexistente (espera 404)"
+echo "2. GET /api/perfil-risco/999 - Cliente inexistente com token (espera 404)"
 echo "-----------------------------------"
-RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/perfil-risco/999")
+RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: Bearer $TOKEN" "${API_URL}/perfil-risco/999")
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"

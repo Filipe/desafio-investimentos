@@ -58,7 +58,7 @@ echo "3️⃣  PERFIL DE RISCO"
 echo "=========================================="
 echo "GET /api/perfil-risco/1"
 echo ""
-PERFIL_RESPONSE=$(curl -s "${API_URL}/perfil-risco/1")
+PERFIL_RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" "${API_URL}/perfil-risco/1")
 echo "$PERFIL_RESPONSE" | jq
 PERFIL=$(echo "$PERFIL_RESPONSE" | jq -r '.nome')
 PONTUACAO=$(echo "$PERFIL_RESPONSE" | jq -r '.pontuacao')
@@ -185,7 +185,7 @@ echo "8️⃣  HISTÓRICO DE INVESTIMENTOS"
 echo "=========================================="
 echo "GET /api/investimentos/1"
 echo ""
-INVESTIMENTOS=$(curl -s "${API_URL}/investimentos/1")
+INVESTIMENTOS=$(curl -s -H "Authorization: Bearer $TOKEN" "${API_URL}/investimentos/1")
 echo "$INVESTIMENTOS" | jq
 TOTAL_INVESTIMENTOS=$(echo "$INVESTIMENTOS" | jq '. | length')
 echo ""
@@ -256,7 +256,7 @@ echo ""
 echo "10.3. Perfil de risco - cliente inexistente (espera 404)"
 echo "GET /api/perfil-risco/999"
 echo "-------------------------------------------"
-RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/perfil-risco/999")
+RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: Bearer $TOKEN" "${API_URL}/perfil-risco/999")
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"

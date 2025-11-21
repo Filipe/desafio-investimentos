@@ -74,9 +74,9 @@ curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/health"
 echo ""
 echo ""
 
-echo "8. GET /api/perfil-risco/1 - Endpoint público"
+echo "8. GET /api/perfil-risco/1 - Endpoint protegido (com token)"
 echo "-----------------------------------"
-curl -s "${API_URL}/perfil-risco/1" | jq
+curl -s -H "Authorization: Bearer $TOKEN" "${API_URL}/perfil-risco/1" | jq
 echo ""
 
 echo "==================================="

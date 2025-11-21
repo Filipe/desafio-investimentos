@@ -1,4 +1,5 @@
 using Investimentos.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Investimentos.Api.Controllers;
@@ -23,7 +24,11 @@ public class PerfilRiscoController : ControllerBase
     /// </summary>
     /// <param name="clienteId">ID do cliente</param>
     /// <returns>Perfil de risco com nome, pontuação e descrição</returns>
+    [Authorize]
     [HttpGet("perfil-risco/{clienteId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> ObterPerfilRisco(int clienteId)
     {
         _logger.LogInformation("Requisição para obter perfil do cliente {ClienteId}", clienteId);

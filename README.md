@@ -17,7 +17,7 @@ API REST desenvolvida em .NET 8 para simulação de investimentos com recomenda�
 
 ## 🚀 Quick Start
 
-### Opção 1: Docker (Recomendado)
+### Opção 1: Docker
 
 ```bash
 # Clone o repositório
@@ -135,8 +135,8 @@ curl -X POST http://localhost:8080/api/simular-investimento \
 | `POST` | `/api/simular-investimento`           | Simular investimento            | 🔒 Requer token |
 | `GET`  | `/api/simulacoes`                     | Listar simulações               | 🔒 Requer token |
 | `GET`  | `/api/simulacoes/por-produto-dia`     | Estatísticas agregadas          | 🔓 Público      |
-| `GET`  | `/api/investimentos/{clienteId}`      | Histórico de investimentos      | 🔓 Público      |
-| `GET`  | `/api/perfil-risco/{clienteId}`       | Obter perfil de risco           | 🔓 Público      |
+| `GET`  | `/api/investimentos/{clienteId}`      | Histórico de investimentos      | 🔒 Requer token |
+| `GET`  | `/api/perfil-risco/{clienteId}`       | Obter perfil de risco           | 🔒 Requer token |
 | `GET`  | `/api/produtos-recomendados/{perfil}` | Produtos recomendados           | 🔓 Público      |
 | `GET`  | `/api/telemetria`                     | Dados de telemetria             | 🔓 Público      |
 
@@ -198,7 +198,7 @@ GET /api/simulacoes
 Authorization: Bearer {token}
 ```
 
-Retorna todas as simulações ordenadas da mais recente para mais antiga.
+Retorna todas as simulações ordenadas da mais recente para mais antiga. Requer autenticação JWT.
 
 **Resposta:**
 ```json
@@ -234,12 +234,13 @@ Retorna estatísticas agregadas por produto e dia.
 ]
 ```
 
-### 5. Histórico de Investimentos por Cliente
+### 5. Histórico de Investimentos por Cliente 🔒
 ```http
 GET /api/investimentos/{clienteId}
+Authorization: Bearer {token}
 ```
 
-Retorna histórico de investimentos (simulações realizadas) de um cliente específico.
+Retorna histórico de investimentos (simulações realizadas) de um cliente específico. Requer autenticação JWT.
 
 **Exemplo:**
 ```bash
@@ -259,12 +260,13 @@ GET /api/investimentos/1
 ]
 ```
 
-### 6. Obter Perfil de Risco
+### 6. Obter Perfil de Risco 🔒
 ```http
 GET /api/perfil-risco/{clienteId}
+Authorization: Bearer {token}
 ```
 
-Calcula perfil de risco baseado em comportamento do cliente.
+Calcula perfil de risco baseado em comportamento do cliente. Requer autenticação JWT.
 
 **Resposta:**
 ```json

@@ -99,8 +99,10 @@ public class SimulacaoController : ControllerBase
     /// </summary>
     /// <param name="clienteId">ID do cliente</param>
     /// <returns>Lista de investimentos do cliente</returns>
+    [Authorize]
     [HttpGet("investimentos/{clienteId}")]
     [ProducesResponseType(typeof(IEnumerable<InvestimentoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<InvestimentoDto>>> ObterInvestimentosPorCliente(int clienteId)
     {
         try

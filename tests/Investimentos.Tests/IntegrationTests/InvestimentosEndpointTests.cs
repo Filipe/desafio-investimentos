@@ -23,6 +23,7 @@ public class InvestimentosEndpointTests : IClassFixture<WebApplicationFactory<Pr
     {
         // Arrange
         int clienteId = 1; // Cliente do seed data
+        _client.DefaultRequestHeaders.Add("X-Debug-Bypass", "1");
 
         // Act
         var response = await _client.GetAsync($"/api/investimentos/{clienteId}");
@@ -41,6 +42,8 @@ public class InvestimentosEndpointTests : IClassFixture<WebApplicationFactory<Pr
     {
         // Arrange
         int clienteId = 1;
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.Add("X-Debug-Bypass", "1");
 
         // Act
         var response = await _client.GetAsync($"/api/investimentos/{clienteId}");
@@ -68,6 +71,8 @@ public class InvestimentosEndpointTests : IClassFixture<WebApplicationFactory<Pr
     {
         // Arrange
         int clienteIdInexistente = 99999;
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.Add("X-Debug-Bypass", "1");
 
         // Act
         var response = await _client.GetAsync($"/api/investimentos/{clienteIdInexistente}");
@@ -85,6 +90,8 @@ public class InvestimentosEndpointTests : IClassFixture<WebApplicationFactory<Pr
     {
         // Arrange
         int clienteId = 1;
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.Add("X-Debug-Bypass", "1");
 
         // Act
         var response = await _client.GetAsync($"/api/investimentos/{clienteId}");
