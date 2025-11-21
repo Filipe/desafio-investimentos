@@ -407,19 +407,32 @@ Scripts bash para validação completa da API (requer `curl` e opcionalmente `jq
 - Agressivo (71-100 pontos) - "Busca alta rentabilidade, aceita maior risco"
 
 **Produtos:**
-1. **CDB Caixa 2026**
+1. **CDB CAIXA 2026**
    - Tipo: CDB
    - Rentabilidade: 12% ao ano
    - Risco: Baixo
    - Valor mínimo: R$ 1.000,00
    - Prazo mínimo: 180 dias
+   - Liquidez: Não imediata
+   - Perfil recomendado: Conservador
 
-2. **Fundo Multimercado XPTO**
+2. **LCI CAIXA**
+   - Tipo: LCI
+   - Rentabilidade: 15% ao ano
+   - Risco: Médio
+   - Valor mínimo: R$ 2.000,00
+   - Prazo mínimo: 90 dias
+   - Liquidez: Não imediata
+   - Perfil recomendado: Moderado
+
+3. **Fundo Multimercado XPTO**
    - Tipo: Fundo
    - Rentabilidade: 18% ao ano
    - Risco: Alto
    - Valor mínimo: R$ 500,00
-   - Liquidez imediata
+   - Prazo mínimo: Sem prazo
+   - Liquidez: Imediata
+   - Perfil recomendado: Agressivo
 
 **Cliente de Exemplo:**
 - ID: 1
@@ -434,42 +447,3 @@ Scripts bash para validação completa da API (requer `curl` e opcionalmente `jq
 
 - **Local (.NET CLI)**: `src/Investimentos.Api/investimentos.db`
 - **Docker**: `/app/data/investimentos.db` (volume montado em `./data`)
-
-## 🛠️ Tecnologias e Bibliotecas
-
-| Categoria        | Tecnologia                                    | Versão  |
-|------------------|-----------------------------------------------|---------|
-| **Framework**    | .NET                                          | 8.0     |
-|                  | ASP.NET Core                                  | 8.0     |
-| **ORM**          | Entity Framework Core                         | 8.0.11  |
-| **Banco**        | SQLite                                        | 3.x     |
-| **Validação**    | FluentValidation.AspNetCore                   | 11.3.0  |
-| **Mapeamento**   | AutoMapper                                    | 12.0.1  |
-| **Autenticação** | System.IdentityModel.Tokens.Jwt               | 8.2.1   |
-|                  | Microsoft.AspNetCore.Authentication.JwtBearer | 8.0.11  |
-| **Logging**      | Serilog.AspNetCore                            | 8.0.3   |
-|                  | Serilog.Sinks.Console                         | 6.0.0   |
-|                  | Serilog.Sinks.File                            | 6.0.0   |
-| **Testes**       | xUnit                                         | 2.9.2   |
-|                  | FluentAssertions                              | 8.8.0   |
-|                  | Moq                                           | 4.20.72 |
-|                  | Microsoft.AspNetCore.Mvc.Testing              | 8.0.11  |
-| **Documentação** | Swashbuckle.AspNetCore                        | 6.9.0   |
-| **Container**    | Docker                                        | -       |
-|                  | Docker Compose                                | -       |
-
-## 🔧 Configuração
-
-### appsettings.json
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Data Source=investimentos.db"
-  },
-  "Jwt": {
-    "Secret": "chave-secreta",
-    "ExpirationMinutes": 60
-  }
-}
-```
