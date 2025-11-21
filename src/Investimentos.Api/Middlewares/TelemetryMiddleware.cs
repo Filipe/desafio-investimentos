@@ -22,7 +22,6 @@ public class TelemetryMiddleware
 
         try
         {
-            // Continua o pipeline
             await _next(context);
         }
         finally

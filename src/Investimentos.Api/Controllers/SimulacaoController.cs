@@ -93,4 +93,28 @@ public class SimulacaoController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Erro ao obter simulações por produto e dia" });
         }
     }
+
+    /// <summary>
+    /// Retorna histórico de investimentos (simulações) de um cliente específico
+    /// </summary>
+    /// <param name="clienteId">ID do cliente</param>
+    /// <returns>Lista de investimentos do cliente</returns>
+    [HttpGet("investimentos/{clienteId}")]
+    [ProducesResponseType(typeof(IEnumerable<InvestimentoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<InvestimentoDto>>> ObterInvestimentosPorCliente(int clienteId)
+    {
+        try
+        {
+            _logger.LogInformation("Obtendo histórico de investimentos para cliente {ClienteId}", clienteId);
+            
+            var investimentos = await _simulacaoService.ObterInvestimentosPorClienteAsync(clienteId);
+            
+            return Ok(investimentos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter investimentos do cliente {ClienteId}", clienteId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Erro ao obter investimentos" });
+        }
+    }
 }

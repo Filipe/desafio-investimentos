@@ -47,6 +47,16 @@ echo "5. Obtendo simulações agrupadas por produto e dia..."
 curl -s "$BASE_URL/simulacoes/por-produto-dia" | jq '.' 2>/dev/null || echo "Erro ao processar resposta"
 echo ""
 
+# 6. Histórico de investimentos por cliente
+echo "6. Obtendo histórico de investimentos do cliente 1..."
+curl -s "$BASE_URL/investimentos/1" | jq '.' 2>/dev/null || echo "Erro ao processar resposta"
+echo ""
+
+# 7. Dados de telemetria
+echo "7. Obtendo dados de telemetria..."
+curl -s "$BASE_URL/telemetria" | jq '.' 2>/dev/null || echo "Erro ao processar resposta"
+echo ""
+
 echo "================================"
 echo "Testes concluídos!"
 echo "================================"

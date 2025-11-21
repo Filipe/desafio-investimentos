@@ -50,9 +50,9 @@ public class ProdutosController : ControllerBase
         // Definir mapeamento de perfil para riscos aceitáveis
         var riscosAceitaveis = perfil.ToLower() switch
         {
-            "conservador" => new[] { "Baixo", "Médio" },
-            "moderado" => new[] { "Baixo", "Médio", "Alto" }, // Moderado aceita todos
-            "agressivo" => new[] { "Alto" },
+            "conservador" => new[] { "Baixo" },
+            "moderado" => new[] { "Baixo", "Médio" },
+            "agressivo" => new[] { "Baixo", "Médio", "Alto" },
             _ => Array.Empty<string>()
         };
 

@@ -190,4 +190,38 @@ public class SimulacaoService : ISimulacaoService
             throw;
         }
     }
+
+    public async Task<IEnumerable<InvestimentoDto>> ObterInvestimentosPorClienteAsync(int clienteId)
+    {
+        try
+        {
+            _logger.LogInformation("Obtendo investimentos para cliente {ClienteId}", clienteId);
+
+            var simulacoes = await _context.Simulacoes
+                .Include(s => s.Produto)
+                .Where(s => s.ClienteId == clienteId)
+                .OrderByDescending(s => s.DataSimulacao)
+                .ToListAsync();
+
+            var investimentos = simulacoes.Select(s => new InvestimentoDto
+            {
+                Id = s.Id,
+                Tipo = s.Produto.Tipo,
+                Valor = s.ValorInvestido,
+                Rentabilidade = s.Produto.Rentabilidade,
+                Data = s.DataSimulacao.ToString("yyyy-MM-dd")
+            }).ToList();
+
+            _logger.LogInformation(
+                "Encontrados {Count} investimentos para cliente {ClienteId}",
+                investimentos.Count, clienteId);
+
+            return investimentos;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter investimentos do cliente {ClienteId}", clienteId);
+            throw;
+        }
+    }
 }

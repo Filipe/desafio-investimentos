@@ -7,4 +7,5 @@ public interface ISimulacaoService
     Task<SimulacaoResponse> SimularInvestimentoAsync(SimulacaoRequest request);
     Task<IEnumerable<SimulacaoDto>> ObterTodasSimulacoesAsync();
     Task<IEnumerable<SimulacaoPorProdutoDiaDto>> GetSimulacoesPorProdutoPorDiaAsync();
+    Task<IEnumerable<InvestimentoDto>> ObterInvestimentosPorClienteAsync(int clienteId);
 }

@@ -1,22 +1,23 @@
 # API de Simulação de Investimentos
 
-API REST desenvolvida em .NET 8 para simulação de investimentos com recomendação de produtos baseada em perfil de risco.
+API REST desenvolvida em .NET 8 para simulação de investimentos com recomendação de produtos baseada em perfil de risco comportamental.
 
 ## 🎯 Funcionalidades
 
-- ✅ Simulação de investimentos com cálculo de juros compostos
-- ✅ Sistema de perfil de risco (Conservador, Moderado, Agressivo)
-- ✅ Recomendação de produtos por perfil
-- ✅ Autenticação JWT Bearer Token
-- ✅ Telemetria de requisições
-- ✅ Health check
-- ✅ Documentação Swagger/OpenAPI
-- ✅ Testes unitários e de integração (xUnit)
-- ✅ Docker e Docker Compose
+- ✅ **Simulação de investimentos** com cálculo de juros compostos
+- ✅ **Sistema de perfil de risco** (Conservador, Moderado, Agressivo) baseado em comportamento
+- ✅ **Recomendação de produtos** por perfil de risco
+- ✅ **Autenticação JWT** Bearer Token com bypass de desenvolvimento
+- ✅ **Telemetria** de requisições com métricas de performance
+- ✅ **Health check** e monitoramento
+- ✅ **Documentação Swagger/OpenAPI** interativa
+- ✅ **37 testes** unitários e de integração (xUnit + FluentAssertions + Moq)
+- ✅ **Docker e Docker Compose** para deploy containerizado
+- ✅ **Scripts automatizados** de teste e validação
 
 ## 🚀 Quick Start
 
-### Usando Docker (Recomendado)
+### Opção 1: Docker (Recomendado)
 
 ```bash
 # Clone o repositório
@@ -30,7 +31,12 @@ docker-compose up -d --build
 open http://localhost:8080/swagger
 ```
 
-### Usando .NET CLI
+A API estará disponível em:
+- **Base URL**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger
+- **Health Check**: http://localhost:8080/api/health
+
+### Opção 2: .NET CLI
 
 ```bash
 # Restaurar dependências
@@ -44,14 +50,27 @@ dotnet run
 open http://localhost:5222/swagger
 ```
 
+A API estará disponível em:
+- **Base URL**: http://localhost:5222
+- **Swagger UI**: http://localhost:5222/swagger
+
 ### Executar Testes
 
 ```bash
-# Todos os testes
+# Todos os testes (37 testes)
 dotnet test
+
+# Com verbosidade
+dotnet test --verbosity normal
 
 # Com cobertura
 dotnet test /p:CollectCoverage=true
+
+# Apenas testes unitários
+dotnet test --filter "FullyQualifiedName~UnitTests"
+
+# Apenas testes de integração
+dotnet test --filter "FullyQualifiedName~IntegrationTests"
 ```
 
 ## 📦 Estrutura do Projeto
@@ -69,78 +88,257 @@ desafio-investimentos/
 │       ├── Validators/             # FluentValidation
 │       └── Mappings/               # AutoMapper profiles
 ├── tests/
-│   └── Investimentos.Tests/        # Testes unitários e integração
+│   └── Investimentos.Tests/        # 37 testes
 │       ├── UnitTests/              # Testes de serviços
 │       └── IntegrationTests/       # Testes de endpoints
-├── Dockerfile                      # Dockerfile multistage
-├── docker-compose.yml              # Orquestração Docker
-├── .dockerignore                   # Exclusões do build
-└── validate-docker.sh              # Script de validação
-
+└── README.md                       # Documentação principal
 ```
 
-## 🔐 Autenticação
+## 📊 Endpoints da API
 
-A API utiliza JWT Bearer Token para proteger endpoints sensíveis.
+### 🔑 Autenticação JWT
 
-### Obter Token
+```http
+POST /api/auth/login
+Content-Type: application/json
 
-```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"clienteId": 1}'
+{
+  "clienteId": 1
+}
 ```
 
-### Usar Token
+**Resposta:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "clienteId": 1,
+  "expiresAt": "2025-11-21T06:29:54Z"
+}
+```
 
+**Usando o token:**
 ```bash
 curl -X POST http://localhost:8080/api/simular-investimento \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
-  -d '{
-    "clienteId": 1,
-    "valor": 10000,
-    "prazoMeses": 12,
-    "tipoProduto": "CDB"
-  }'
-```
-
-### Development Bypass (Apenas Dev)
-
-Para facilitar testes, use o header `X-Debug-Bypass: 1`:
-
-```bash
-curl -X POST http://localhost:8080/api/simular-investimento \
-  -H "X-Debug-Bypass: 1" \
-  -H "Content-Type: application/json" \
   -d '{"clienteId": 1, "valor": 10000, "prazoMeses": 12}'
 ```
 
-## 📊 Endpoints Principais
+**Development Bypass:** Use `X-Debug-Bypass: 1` para acessar endpoints protegidos sem token em dev.
 
-| Método | Endpoint                           | Descrição              | Auth            |
-|--------|------------------------------------|------------------------|-----------------|
-| `GET`  | `/api/health`                      | Health check           | 🔓 Público      |
-| `POST` | `/api/auth/login`                  | Obter token JWT        | 🔓 Público      |
-| `POST` | `/api/simular-investimento`        | Simular investimento   | 🔒 Requer token |
-| `GET`  | `/api/simulacoes`                  | Listar simulações      | 🔒 Requer token |
-| `GET`  | `/api/simulacoes/por-produto-dia`  | Estatísticas agregadas | 🔓 Público      |
-| `GET`  | `/api/perfil-risco/{id}`           | Obter perfil de risco  | 🔓 Público      |
-| `GET`  | `/api/produtos/recomendacoes/{id}` | Produtos recomendados  | 🔓 Público      |
-| `GET`  | `/api/telemetria`                  | Dados de telemetria    | 🔓 Público      |
+### Resumo dos Endpoints
 
-Ver [src/Investimentos.Api/README.md](src/Investimentos.Api/README.md) para documentação completa dos endpoints.
+| Método | Endpoint                              | Descrição                       | Auth            |
+|--------|---------------------------------------|---------------------------------|-----------------|
+| `GET`  | `/api/health`                         | Health check                    | 🔓 Público      |
+| `POST` | `/api/auth/login`                     | Obter token JWT                 | 🔓 Público      |
+| `POST` | `/api/simular-investimento`           | Simular investimento            | 🔒 Requer token |
+| `GET`  | `/api/simulacoes`                     | Listar simulações               | 🔒 Requer token |
+| `GET`  | `/api/simulacoes/por-produto-dia`     | Estatísticas agregadas          | 🔓 Público      |
+| `GET`  | `/api/investimentos/{clienteId}`      | Histórico de investimentos      | 🔓 Público      |
+| `GET`  | `/api/perfil-risco/{clienteId}`       | Obter perfil de risco           | 🔓 Público      |
+| `GET`  | `/api/produtos-recomendados/{perfil}` | Produtos recomendados           | 🔓 Público      |
+| `GET`  | `/api/telemetria`                     | Dados de telemetria             | 🔓 Público      |
+
+### 1. Health Check
+```http
+GET /api/health
+```
+Retorna status 200 OK quando a API está funcionando. Endpoint público.
+
+### 2. Simular Investimento 🔒
+```http
+POST /api/simular-investimento
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "clienteId": 1,
+  "valor": 10000.00,
+  "prazoMeses": 12,
+  "tipoProduto": "CDB"
+}
+```
+
+**Validações:**
+- `clienteId` > 0
+- `valor` > 0
+- `prazoMeses` > 0 e ≤ 360
+- `tipoProduto` não vazio e ≤ 50 caracteres
+
+**Lógica de Simulação:**
+1. Busca produtos elegíveis (valor mínimo, prazo mínimo, tipo)
+2. Seleciona produto com menor risco (Baixo → Médio → Alto)
+3. Calcula valor final: `VF = VP × (1 + i)^(n/12)`
+4. Salva simulação no banco
+5. Retorna resultado
+
+**Resposta:**
+```json
+{
+  "produtoValidado": {
+    "id": 1,
+    "nome": "CDB Caixa 2026",
+    "tipo": "CDB",
+    "rentabilidade": 0.12,
+    "risco": "Baixo"
+  },
+  "resultadoSimulacao": {
+    "valorFinal": 11200.00,
+    "rentabilidadeEfetiva": 0.12,
+    "prazoMeses": 12
+  },
+  "dataSimulacao": "2025-11-21T04:00:00Z"
+}
+```
+
+### 3. Listar Simulações 🔒
+```http
+GET /api/simulacoes
+Authorization: Bearer {token}
+```
+
+Retorna todas as simulações ordenadas da mais recente para mais antiga.
+
+**Resposta:**
+```json
+[
+  {
+    "id": 1,
+    "clienteId": 1,
+    "produto": "CDB Caixa 2026",
+    "valorInvestido": 10000.00,
+    "valorFinal": 11200.00,
+    "prazoMeses": 12,
+    "dataSimulacao": "2025-11-21T04:00:00Z"
+  }
+]
+```
+
+### 4. Simulações por Produto e Dia
+```http
+GET /api/simulacoes/por-produto-dia
+```
+
+Retorna estatísticas agregadas por produto e dia.
+
+**Resposta:**
+```json
+[
+  {
+    "produto": "CDB Caixa 2026",
+    "data": "2025-11-21",
+    "quantidadeSimulacoes": 15,
+    "mediaValorFinal": 11050.00
+  }
+]
+```
+
+### 5. Histórico de Investimentos por Cliente
+```http
+GET /api/investimentos/{clienteId}
+```
+
+Retorna histórico de investimentos (simulações realizadas) de um cliente específico.
+
+**Exemplo:**
+```bash
+GET /api/investimentos/1
+```
+
+**Resposta:**
+```json
+[
+  {
+    "id": 1,
+    "tipo": "CDB",
+    "valor": 10000.00,
+    "rentabilidade": 0.12,
+    "data": "2025-11-21"
+  }
+]
+```
+
+### 6. Obter Perfil de Risco
+```http
+GET /api/perfil-risco/{clienteId}
+```
+
+Calcula perfil de risco baseado em comportamento do cliente.
+
+**Resposta:**
+```json
+{
+  "clienteId": 1,
+  "nome": "Moderado",
+  "pontuacao": 65,
+  "descricao": "Perfil equilibrado entre segurança e rentabilidade."
+}
+```
+
+**Algoritmo de Cálculo (0-100 pontos):**
+- **Volume** (0-40 pts): Saldo total normalizado até R$ 100.000,00
+- **Frequência** (0-30 pts): Número de movimentações × 3
+- **Liquidez** (0-30 pts): Preferência por liquidez vs rentabilidade
+
+**Mapeamento:**
+- 0-40: Conservador
+- 41-70: Moderado  
+- 71-100: Agressivo
+
+### 7. Produtos Recomendados
+```http
+GET /api/produtos-recomendados/{perfil}
+```
+
+Retorna produtos filtrados por risco, ordenados por rentabilidade (maior primeiro).
+
+**Perfis:** `Conservador`, `Moderado`, `Agressivo`
+
+**Resposta:**
+```json
+[
+  {
+    "id": 1,
+    "nome": "CDB Caixa 2026",
+    "tipo": "CDB",
+    "rentabilidade": 0.12,
+    "risco": "Baixo"
+  }
+]
+```
+
+**Mapeamento de risco:**
+- **Conservador**: Risco Baixo apenas
+- **Moderado**: Risco Baixo + Médio
+- **Agressivo**: Todos os riscos (Baixo + Médio + Alto)
+
+### 8. Telemetria
+```http
+GET /api/telemetria
+GET /api/telemetria?dataInicio=2025-11-01&dataFim=2025-11-30
+```
+
+Retorna métricas de volume e performance por serviço.
+
+**Resposta:**
+```json
+{
+  "servicos": [
+    {
+      "nome": "simular-investimento",
+      "quantidadeChamadas": 120,
+      "mediaTempoRespostaMs": 93.5
+    }
+  ],
+  "periodo": {
+    "inicio": "2025-11-01",
+    "fim": "2025-11-30"
+  }
+}
+```
 
 ## 🐳 Docker
-
-### Arquitetura
-
-- **Multistage build** para otimizar tamanho da imagem
-- **Imagem base**: `mcr.microsoft.com/dotnet/aspnet:8.0`
-- **Volume**: Persistência do SQLite em `./data`
-- **Porta**: 8080:80
-
-### Comandos Úteis
 
 ```bash
 # Build e iniciar
@@ -152,98 +350,113 @@ docker-compose logs -f api
 # Parar
 docker-compose down
 
-# Reiniciar banco
+# Reiniciar (limpa banco)
 docker-compose down -v && rm -rf ./data && docker-compose up -d
 ```
 
-Ver [DOCKER.md](DOCKER.md) para instruções completas.
+A API estará em http://localhost:8080. O banco SQLite é persistido em `./data/investimentos.db`.
 
 ## 🧪 Testes
 
-O projeto possui **33 testes** cobrindo:
-
-- ✅ Testes unitários de serviços (SimulacaoService, RecomendacaoService)
-- ✅ Testes de integração de endpoints
-- ✅ Testes de autenticação JWT
-- ✅ Testes de validação
-- ✅ Testes de persistência no banco
-
-### Executar Testes
+**37 testes** - unitários, integração, autenticação e validação.
 
 ```bash
-# Todos os testes
+# Executar todos os testes
 dotnet test
 
-# Com verbosidade
-dotnet test --verbosity normal
-
-# Apenas unitários
+# Testes unitários apenas
 dotnet test --filter "FullyQualifiedName~UnitTests"
-
-# Apenas integração
-dotnet test --filter "FullyQualifiedName~IntegrationTests"
 ```
 
-### Cobertura
+### Scripts de Teste
+
+Scripts bash para validação completa da API (requer `curl` e opcionalmente `jq`):
 
 ```bash
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+# Teste completo
+./scripts/test-all-endpoints.sh
+
+# Testes específicos
+./scripts/test-api.sh              # Endpoints principais
+./scripts/test-auth.sh             # Autenticação JWT
+./scripts/test-perfil-risco.sh     # Perfil de risco
+./scripts/test-telemetria.sh       # Telemetria
+./scripts/validate-docker.sh       # Validação Docker
+./scripts/clean-project.sh         # Limpeza para export
 ```
 
 ## 💾 Banco de Dados
 
-- **SQLite** - Banco leve e portável
-- **EF Core 8** - ORM com migrations
+- **SQLite** - Banco leve e portável para desenvolvimento
+- **EF Core 8** - ORM com migrations automáticas
 - **Seed automático** - Dados iniciais criados na primeira execução
 
 ### Entidades
 
-- `Cliente` - Dados do cliente
-- `PerfilRisco` - Perfis de risco (Conservador, Moderado, Agressivo)
-- `Produto` - Produtos de investimento (CDB, Fundos, etc)
-- `Simulacao` - Histórico de simulações
-- `TelemetriaRegistro` - Logs de requisições
+- **Cliente** - Dados do cliente (nome, email, saldo, perfil)
+- **PerfilRisco** - Perfis de risco (Conservador, Moderado, Agressivo)
+- **Produto** - Produtos de investimento (CDB, Fundos, LCI, etc)
+- **Simulacao** - Histórico de simulações realizadas
+- **TelemetriaRegistro** - Logs de requisições com métricas
+
+### Dados de Seed (Iniciais)
+
+**Perfis de Risco:**
+- Conservador (0-40 pontos) - "Prioriza segurança e baixo risco"
+- Moderado (41-70 pontos) - "Perfil equilibrado entre segurança e rentabilidade"
+- Agressivo (71-100 pontos) - "Busca alta rentabilidade, aceita maior risco"
+
+**Produtos:**
+1. **CDB Caixa 2026**
+   - Tipo: CDB
+   - Rentabilidade: 12% ao ano
+   - Risco: Baixo
+   - Valor mínimo: R$ 1.000,00
+   - Prazo mínimo: 180 dias
+
+2. **Fundo Multimercado XPTO**
+   - Tipo: Fundo
+   - Rentabilidade: 18% ao ano
+   - Risco: Alto
+   - Valor mínimo: R$ 500,00
+   - Liquidez imediata
+
+**Cliente de Exemplo:**
+- ID: 1
+- Nome: João da Silva
+- Email: joao.silva@example.com
+- Perfil: Moderado
+- Saldo: R$ 50.000,00
+- Movimentações: 10
+- Preferência: Busca rentabilidade
 
 ### Localização do Banco
 
-- **Local**: `src/Investimentos.Api/investimentos.db`
-- **Docker**: `/app/data/investimentos.db` (volume em `./data`)
+- **Local (.NET CLI)**: `src/Investimentos.Api/investimentos.db`
+- **Docker**: `/app/data/investimentos.db` (volume montado em `./data`)
 
-## 🛠️ Tecnologias
+## 🛠️ Tecnologias e Bibliotecas
 
-| Categoria       | Tecnologia                   |
-|-----------------|------------------------------|
-| Framework       | .NET 8, ASP.NET Core         |
-| ORM             | Entity Framework Core 8      |
-| Banco           | SQLite                       |
-| Validação       | FluentValidation             |
-| Mapeamento      | AutoMapper                   |
-| Autenticação    | JWT Bearer Token             |
-| Logging         | Serilog                      |
-| Testes          | xUnit, FluentAssertions, Moq |
-| Documentação    | Swagger/OpenAPI              |
-| Containerização | Docker, Docker Compose       |
-
-## 📝 Scripts de Teste
-
-O projeto inclui scripts bash para testar os endpoints:
-
-```bash
-# Testar API principal
-./test-api.sh
-
-# Testar perfil de risco
-./test-perfil-risco.sh
-
-# Testar telemetria
-./test-telemetria.sh
-
-# Testar autenticação
-./test-auth.sh
-
-# Validar Docker
-./validate-docker.sh
-```
+| Categoria        | Tecnologia                                    | Versão  |
+|------------------|-----------------------------------------------|---------|
+| **Framework**    | .NET                                          | 8.0     |
+|                  | ASP.NET Core                                  | 8.0     |
+| **ORM**          | Entity Framework Core                         | 8.0.11  |
+| **Banco**        | SQLite                                        | 3.x     |
+| **Validação**    | FluentValidation.AspNetCore                   | 11.3.0  |
+| **Mapeamento**   | AutoMapper                                    | 12.0.1  |
+| **Autenticação** | System.IdentityModel.Tokens.Jwt               | 8.2.1   |
+|                  | Microsoft.AspNetCore.Authentication.JwtBearer | 8.0.11  |
+| **Logging**      | Serilog.AspNetCore                            | 8.0.3   |
+|                  | Serilog.Sinks.Console                         | 6.0.0   |
+|                  | Serilog.Sinks.File                            | 6.0.0   |
+| **Testes**       | xUnit                                         | 2.9.2   |
+|                  | FluentAssertions                              | 8.8.0   |
+|                  | Moq                                           | 4.20.72 |
+|                  | Microsoft.AspNetCore.Mvc.Testing              | 8.0.11  |
+| **Documentação** | Swashbuckle.AspNetCore                        | 6.9.0   |
+| **Container**    | Docker                                        | -       |
+|                  | Docker Compose                                | -       |
 
 ## 🔧 Configuração
 
@@ -255,52 +468,8 @@ O projeto inclui scripts bash para testar os endpoints:
     "DefaultConnection": "Data Source=investimentos.db"
   },
   "Jwt": {
-    "Secret": "sua-chave-secreta-super-segura",
+    "Secret": "chave-secreta",
     "ExpirationMinutes": 60
   }
 }
 ```
-
-### Variáveis de Ambiente (Docker)
-
-| Variável                               | Descrição      | Padrão                                   |
-|----------------------------------------|----------------|------------------------------------------|
-| `ASPNETCORE_ENVIRONMENT`               | Ambiente       | `Production`                             |
-| `ASPNETCORE_URLS`                      | URL de escuta  | `http://+:80`                            |
-| `ConnectionStrings__DefaultConnection` | String conexão | `Data Source=/app/data/investimentos.db` |
-
-## 📖 Documentação
-
-- **API**: [src/Investimentos.Api/README.md](src/Investimentos.Api/README.md)
-- **Docker**: [DOCKER.md](DOCKER.md)
-- **Swagger**: http://localhost:8080/swagger (quando em execução)
-
-## 🎯 Algoritmos
-
-### Cálculo de Juros Compostos
-
-```
-VF = VP × (1 + i)^(n/12)
-
-Onde:
-- VF = Valor Final
-- VP = Valor Presente (investimento inicial)
-- i = Taxa de rentabilidade anual
-- n = Prazo em meses
-```
-
-### Perfil de Risco
-
-Pontuação de 0-100 baseada em:
-- **Volume** (0-40 pts): Saldo total normalizado até R$ 100k
-- **Frequência** (0-30 pts): Número de movimentações × 3
-- **Liquidez** (0-30 pts): Prefere liquidez = 0, busca rentabilidade = 30
-
-**Mapeamento:**
-- 0-40: Conservador
-- 41-70: Moderado
-- 71-100: Agressivo
-
-## 📄 Licença
-
-Este projeto é um desafio técnico para fins de avaliação.

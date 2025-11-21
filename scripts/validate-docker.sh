@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Script de validação para Docker build e execução
-# Execute este script para validar a configuração Docker
+# Script de validação para Docker build e execuçãos
 
 set -e
 
