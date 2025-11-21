@@ -49,7 +49,7 @@ public static class SeedData
         {
             new Produto
             {
-                Nome = "CDB Caixa 2026",
+                Nome = "CDB CAIXA 2026",
                 Tipo = "CDB",
                 Rentabilidade = 0.12m,
                 Risco = "Baixo",
@@ -57,6 +57,18 @@ public static class SeedData
                 ValorMinimoInvestimento = 1000.00m,
                 LiquidezImediata = false,
                 PerfilRiscoRecomendado = "Conservador",
+                DataCriacao = DateTime.UtcNow
+            },
+            new Produto
+            {
+                Nome = "LCI CAIXA",
+                Tipo = "LCI",
+                Rentabilidade = 0.15m,
+                Risco = "Médio",
+                PrazoMinimoDias = 90,
+                ValorMinimoInvestimento = 2000.00m,
+                LiquidezImediata = false,
+                PerfilRiscoRecomendado = "Moderado",
                 DataCriacao = DateTime.UtcNow
             },
             new Produto

@@ -2,6 +2,9 @@
 
 # Script para limpar arquivos temporários antes de exportar o projeto
 
+# Ir para o diretório raiz do projeto
+cd "$(dirname "$0")/.." || exit 1
+
 echo "🧹 Limpando arquivos temporários do projeto..."
 echo ""
 

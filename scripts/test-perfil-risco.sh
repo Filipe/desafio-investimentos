@@ -18,7 +18,11 @@ echo ""
 # Teste 2: Tentar obter perfil de cliente inexistente
 echo "2. GET /api/perfil-risco/999 - Cliente inexistente (espera 404)"
 echo "-----------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/perfil-risco/999" | jq
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/perfil-risco/999")
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 echo ""
 
@@ -46,7 +50,11 @@ echo ""
 # Teste 6: Perfil inválido (espera 400)
 echo "6. GET /api/produtos-recomendados/Invalido (espera 400)"
 echo "-----------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/produtos-recomendados/Invalido" | jq
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/produtos-recomendados/Invalido")
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 echo ""
 

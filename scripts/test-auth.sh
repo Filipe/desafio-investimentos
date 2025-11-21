@@ -24,9 +24,13 @@ echo ""
 # Teste 2: Tentar acessar endpoint protegido SEM token (deve retornar 401)
 echo "2. POST /api/simular-investimento SEM token (espera 401)"
 echo "-----------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/simular-investimento" \
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/simular-investimento" \
   -H "Content-Type: application/json" \
-  -d '{"clienteId":1,"valor":10000,"prazoMeses":12,"tipoProduto":"CDB"}'
+  -d '{"clienteId":1,"valor":10000,"prazoMeses":12,"tipoProduto":"CDB"}')
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 echo ""
 

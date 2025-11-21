@@ -220,7 +220,7 @@ echo ""
 echo "10.1. Simulação com valor inválido (espera 400)"
 echo "POST /api/simular-investimento (valor = 0)"
 echo "-------------------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/simular-investimento" \
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/simular-investimento" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
@@ -228,27 +228,39 @@ curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/simular-investimento" \
     "valor": 0,
     "prazoMeses": 12,
     "tipoProduto": "CDB"
-  }' | jq
+  }')
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 
 echo "10.2. Acesso sem autenticação (espera 401)"
 echo "POST /api/simular-investimento (sem token)"
 echo "-------------------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/simular-investimento" \
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/simular-investimento" \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": 1,
     "valor": 10000,
     "prazoMeses": 12,
     "tipoProduto": "CDB"
-  }'
+  }')
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 echo ""
 
 echo "10.3. Perfil de risco - cliente inexistente (espera 404)"
 echo "GET /api/perfil-risco/999"
 echo "-------------------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/perfil-risco/999" | jq
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/perfil-risco/999")
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq -e . 2>/dev/null || echo "$BODY"
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 echo ""
 
