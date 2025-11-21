@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Investimentos.Api.Data;
 using Investimentos.Api.DTOs;
 using AutoMapper;
@@ -30,7 +31,7 @@ public class ProdutosController : ControllerBase
     /// <param name="perfil">Nome do perfil: Conservador, Moderado ou Agressivo</param>
     /// <returns>Lista de produtos filtrados por risco e ordenados por rentabilidade</returns>
     [HttpGet("produtos-recomendados/{perfil}")]
-    public async Task<ActionResult<IEnumerable<ProdutoDto>>> GetProdutosRecomendados(string perfil)
+    public async Task<ActionResult<IEnumerable<ProdutoDto>>> GetProdutosRecomendados([DefaultValue("Moderado")] string perfil)
     {
         _logger.LogInformation("Buscando produtos recomendados para perfil: {Perfil}", perfil);
 

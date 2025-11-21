@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Investimentos.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ public class PerfilRiscoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> ObterPerfilRisco(int clienteId)
+    public async Task<ActionResult> ObterPerfilRisco([DefaultValue(1)] int clienteId)
     {
         _logger.LogInformation("Requisição para obter perfil do cliente {ClienteId}", clienteId);
 

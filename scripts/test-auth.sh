@@ -62,9 +62,13 @@ echo ""
 # Teste 6: Login com cliente inexistente (deve retornar 404)
 echo "6. POST /api/auth/login - Cliente inexistente (espera 404)"
 echo "-----------------------------------"
-curl -s -w "\nHTTP Status: %{http_code}\n" "${API_URL}/auth/login" \
+RESPONSE=$(curl -s -w "\n%{http_code}" "${API_URL}/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"clienteId": 999}' | jq
+  -d '{"clienteId": 999}')
+HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+echo "$BODY" | jq
+echo "HTTP Status: $HTTP_CODE"
 echo ""
 
 # Teste 7: Endpoints públicos (não requerem autenticação)

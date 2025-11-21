@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Investimentos.Api.DTOs;
@@ -103,7 +104,7 @@ public class SimulacaoController : ControllerBase
     [HttpGet("investimentos/{clienteId}")]
     [ProducesResponseType(typeof(IEnumerable<InvestimentoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IEnumerable<InvestimentoDto>>> ObterInvestimentosPorCliente(int clienteId)
+    public async Task<ActionResult<IEnumerable<InvestimentoDto>>> ObterInvestimentosPorCliente([DefaultValue(1)] int clienteId)
     {
         try
         {

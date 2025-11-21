@@ -1,7 +1,10 @@
+using System.ComponentModel;
+
 namespace Investimentos.Api.DTOs;
 
 public class LoginRequest
 {
+    [DefaultValue(1)]
     public int ClienteId { get; set; }
 }
 

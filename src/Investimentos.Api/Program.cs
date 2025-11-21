@@ -88,11 +88,12 @@ try
         // Configurar JWT no Swagger
         c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
         {
-            Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Bearer {token}\"",
+            Description = "Insira o token retornado pelo endpoint /api/auth/login.",
             Name = "Authorization",
             In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-            Scheme = "Bearer"
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"
         });
 
         c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
